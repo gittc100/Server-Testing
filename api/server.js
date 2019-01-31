@@ -1,24 +1,59 @@
-const express = require('express');
+const express = require("express");
 
-const users = require('../users/users.js');
+const users = require("../users/users.js");
 
 const server = express();
 
 server.use(express.json());
 
-// server.get('/', async (req, res) => {
-//   res.status(200).json({ api: 'up' });
-// });
+const serverError = res => err => {
+  res.status(500).json(err);
+};
+const getSuccess = res => data => {
+  res.status(200).json(data);
+};
 
-server.get('/users', async (req, res) => {
-//   const rows = await hobbits.getAll();
+const delSuccess = res => data => {
+  res.status(200).json(data);
+};
 
-//   res.status(200).json(rows);
+const postSuccess = res => id => {
+  res.status(201).json(id);
+};
+
+server.get("/users", (req, res) => {
+  users
+    .getAll()
+    .then(getSuccess(res))
+    .catch(serverError(res));
 });
 
-server.post('/greet', (req, res)=>{
-//   const {firstName, lastName} = req.body;
-//   res.status(201).json({hello: `${firstName} ${lastName}`});
+server.get("/users/:id", async (req, res) => {
+  const { id } = req.params;
+  users
+    .findById(id)
+    .then(getSuccess(res))
+    .catch(serverError(res));
+});
+
+server.post("/users", (req, res) => {
+  const body = req.body;
+  if (!body) {
+    res.status(500).json({ Error_Message: "Provide User Name" });
+  } else {
+    users
+      .insert(body)
+      .then(postSuccess(res))
+      .catch(serverError(res));
+  }
+});
+
+server.delete("/users/:id", (req, res) => {
+  const { id } = req.params;
+  users
+    .remove(id)
+    .then(delSuccess(res))
+    .catch(serverError(res));
 });
 
 module.exports = server;
