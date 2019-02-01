@@ -14,7 +14,7 @@ const getSuccess = res => data => {
 };
 
 const delSuccess = res => data => {
-  res.status(200).json(data);
+  res.status(204).json(data);
 };
 
 const postSuccess = res => id => {
